@@ -30,7 +30,7 @@ public class MainClass {
             String name = br.readLine();
             int[][] content = file.loadFile(location + name);
 
-            show("Insert (binary) key: ");
+            show("Insert (hex) key: ");
             String key = br.readLine();
             DesAlgorithm des = new DesAlgorithm(key);
             des.doDes();
