@@ -8,6 +8,7 @@ package app;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  *
@@ -25,15 +26,17 @@ public class MainClass {
         show("CHOOSE: 1. Code, 2. Decode, 0. End.");
         chosen = br.readLine();
         while (!chosen.equals("0")) {
-            show("Actual location of searching files: " + location);
-            show("Insert input file name: ");
-            String name = br.readLine();
-            int[][] content = file.loadFile(location + name);
+            //show("Actual location of searching files: " + location);
+            //show("Insert input file name: ");
+            //String name = br.readLine();
+            //int[][] content = file.loadFile(location + name);
+            show("Insert meassage: ");
+            String message = br.readLine();
 
             show("Insert (hex) key: ");
             String key = br.readLine();
-            DesAlgorithm des = new DesAlgorithm(key);
-            des.doDes();
+            Des des = new Des(key);
+            des.doDes(message);
 
             show("\nCHOOSE: 1. Code, 2. Decode, 0. End.");
             chosen = br.readLine();

@@ -11,13 +11,49 @@ package app;
  */
 public class BinMath {
 
+    public int[] fromHexStringToBin(String value, int length) {
+        String valueBin = "";
+        int[] valueTable = new int[length];
+        for (int i = 0; i < value.length(); i++) {
+            if (value.charAt(i) == ' ') {
+                valueBin += ' ';
+            } else {
+                String binTemp = hexToBin(value.charAt(i) + "");
+                while (binTemp.length() < 4) {
+                    binTemp = "0" + binTemp;
+                }
+                valueBin += binTemp;
+            }
+        }
+        int keyIndex = 0;
+
+        for (int i = 0; i < valueBin.length(); i++) {
+            try {
+                int bit = Integer.parseInt(valueBin.charAt(i) + "");
+                valueTable[keyIndex] = bit;
+                keyIndex++;
+            } catch (NumberFormatException nfex) {
+                if (valueBin.charAt(i) != ' ') {
+                    System.out.println("Wrong input!");
+                    break;
+                }
+            }
+        }
+        return valueTable;
+    }
+
     public String hexToBin(String hex) {
         int i = Integer.parseInt(hex, 16);
         String bin = Integer.toBinaryString(i);
         return bin;
     }
+    
+    public int[] doLeftShift(int[] table, int shift){
+        int[] shiftTable = (shift == 1) ? leftShift(table) : doubleLeftShift(table);
+        return shiftTable;
+    }
 
-    public int[] leftShift(int[] table) {
+    private int[] leftShift(int[] table) {
         int lastIndex = table.length - 1;
         int[] shiftedTable = new int[table.length];
         for (int i = lastIndex; i > 0; i--) {
@@ -27,7 +63,7 @@ public class BinMath {
         return shiftedTable;
     }
 
-    public int[] doubleLeftShift(int[] table) {
+    private int[] doubleLeftShift(int[] table) {
         int lastIndex = table.length - 1;
         int[] shiftedTable = new int[table.length];
         for (int i = lastIndex; i > 1; i--) {
@@ -36,5 +72,21 @@ public class BinMath {
         shiftedTable[table.length - 2] = table[0];
         shiftedTable[table.length - 1] = table[1];
         return shiftedTable;
+    }
+
+    public int xor(int x, int y) {
+        if (x == 0 && y == 0) {
+            return 0;
+        }
+        if (x == 0 && y == 1) {
+            return 1;
+        }
+        if (x == 1 && y == 0) {
+            return 1;
+        }
+        if (x == 1 && y == 1) {
+            return 0;
+        }
+        return 10;
     }
 }
