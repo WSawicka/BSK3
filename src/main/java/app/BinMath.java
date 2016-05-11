@@ -11,6 +11,12 @@ package app;
  */
 public class BinMath {
 
+    public int[] fromBinStringToBin(String value) {
+        int[] valueTable = new int[value.length()];
+
+        return valueTable;
+    }
+
     public int[] fromHexStringToBin(String value, int length) {
         String valueBin = "";
         int[] valueTable = new int[length];
@@ -47,8 +53,16 @@ public class BinMath {
         String bin = Integer.toBinaryString(i);
         return bin;
     }
-    
-    public int[] doLeftShift(int[] table, int shift){
+
+    public String intToString(int number) {
+        String binary = Integer.toBinaryString(number);
+        while (binary.length() < 4) {
+            binary = "0" + binary;
+        }
+        return binary;
+    }
+
+    public int[] doLeftShift(int[] table, int shift) {
         int[] shiftTable = (shift == 1) ? leftShift(table) : doubleLeftShift(table);
         return shiftTable;
     }

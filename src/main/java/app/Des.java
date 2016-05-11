@@ -24,6 +24,7 @@ public class Des {
     private int B_64 = 64;
     private int B_56 = 56;
     private int B_48 = 48;
+    private int B_32 = 32;
     private int[] key;
 
     public Des(String keyHex) {
@@ -35,19 +36,59 @@ public class Des {
 
         // 1. initial permutation
         int[] messPermuted = this.tables.getIP_Message(message);
+        
         // 2. divide array into two parts - left half and right half
         int[] messL = ArrayUtils.subarray(messPermuted, 0, messPermuted.length / 2);
         int[] messR = ArrayUtils.subarray(messPermuted, messPermuted.length / 2, messPermuted.length);
-        System.out.println("\n\t2. DIVIDED:\n" + getString(messL, 8) + "\n" + getString(messR, 8));
-
-        List keys = doKey();
+        List<int[]> keys = doKey();
 
         // ITERATIONS
-        for (int i = 0; i < 16; i++) {
+        for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
+            // e permutation
             int[] eMessR = this.tables.getE_Message(messR);
-            System.out.println(getString(eMessR, 6));
 
+            // XOR of key and permuted message
+            int[] xorResult = new int[eMessR.length];
+            for (int i = 0; i < eMessR.length; i++) {
+                xorResult[i] = binMath.xor(eMessR[i], keys.get(keyIndex)[i]);
+            }
+
+            // s-box transformation
+            String row = "";
+            String column = "";
+            int[] sTransformedMess = new int[32];
+            int sTransformedIndex = 0;
+            int sTableIndex = 0;
+            for (int i = 0; i < xorResult.length; i = i + 6, sTableIndex++) {
+                row = String.valueOf(xorResult[i]) + String.valueOf(xorResult[i + 5]);
+                column = String.valueOf(xorResult[i + 1]) + String.valueOf(xorResult[i + 2])
+                        + String.valueOf(xorResult[i + 3]) + String.valueOf(xorResult[i + 4]);
+
+                int rowNumber = Integer.parseInt(row, 2);
+                int columnNumber = Integer.parseInt(column, 2);
+                int sTableNumber = this.tables.getSTables().get(sTableIndex)[rowNumber][columnNumber];
+                String binary = this.binMath.intToString(sTableNumber);
+
+                for (int bin = 0; bin < binary.length(); bin++) {
+                    sTransformedMess[sTransformedIndex + bin] = Integer.parseInt(binary.charAt(bin) + "");
+                }
+                sTransformedIndex += binary.length();
+            }
+
+            // p permutation -> another table mask
+            int[] pMessage = this.tables.getP_Message(sTransformedMess);
+            
+            int[] tempR = new int[messR.length];
+            for (int i = 0; i < messL.length; i++) {
+                tempR[i] = binMath.xor(messL[i], pMessage[i]);
+            }
+            
+            messL = ArrayUtils.addAll(messR, null);
+            messR = ArrayUtils.addAll(tempR, null);
+
+            System.out.println("\n\tITERATION " + (keyIndex + 1) + ":\n" + getString(messL, 4) + "\n" + getString(messR, 4));
         }
+
     }
 
     public List<int[]> doKey() {
