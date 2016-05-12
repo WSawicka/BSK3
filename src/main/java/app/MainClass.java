@@ -33,8 +33,8 @@ public class MainClass {
                     show("Insert (hex) key: ");
                     String key = br.readLine();
                     Des des = new Des(key);
-                    if("1".equals(chosen)) des.doDes(true, message);
-                    else des.doDes(false, message);
+                    if("1".equals(chosen)) System.out.println(des.doDes(true, message));
+                    else System.out.println(des.doDes(false, message));
                     break;
                 case "3":
                     show("Actual location of searching files: " + location);

@@ -17,10 +17,10 @@ import lombok.Getter;
 public class Tables {
 
     private List<int[][]> sTables;
-    private int B_64 = 64;
-    private int B_56 = 56;
-    private int B_48 = 48;
-    private int B_32 = 32;
+    private final int B_64 = 64;
+    private final int B_56 = 56;
+    private final int B_48 = 48;
+    private final int B_32 = 32;
 
     public Tables() {
         this.sTables = new ArrayList<>();
