@@ -48,6 +48,17 @@ public class BinMath {
         return valueTable;
     }
 
+    public String fromBinStringToHexString(String bin) {
+        String hex = "";
+        for (int i = 0; i < bin.length(); i = i + 4) {
+            String copy = bin.substring(i, i + 4);
+            int decimal = Integer.parseInt(copy, 2);
+            if(decimal == 0) hex += "0";
+            else hex += Integer.toString(decimal, 16);
+        }
+        return hex;
+    }
+
     public String hexToBin(String hex) {
         int i = Integer.parseInt(hex, 16);
         String bin = Integer.toBinaryString(i);

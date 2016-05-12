@@ -36,13 +36,13 @@ public class Des {
 
         // 1. initial permutation
         int[] messPermuted = this.tables.getIP_Message(message);
-        
+
         // 2. divide array into two parts - left half and right half
         int[] messL = ArrayUtils.subarray(messPermuted, 0, messPermuted.length / 2);
         int[] messR = ArrayUtils.subarray(messPermuted, messPermuted.length / 2, messPermuted.length);
         List<int[]> keys = doKey();
 
-        // ITERATIONS
+        // 3. ITERATIONS
         for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
             // e permutation
             int[] eMessR = this.tables.getE_Message(messR);
@@ -64,9 +64,7 @@ public class Des {
                 column = String.valueOf(xorResult[i + 1]) + String.valueOf(xorResult[i + 2])
                         + String.valueOf(xorResult[i + 3]) + String.valueOf(xorResult[i + 4]);
 
-                int rowNumber = Integer.parseInt(row, 2);
-                int columnNumber = Integer.parseInt(column, 2);
-                int sTableNumber = this.tables.getSTables().get(sTableIndex)[rowNumber][columnNumber];
+                int sTableNumber = this.tables.getSTables().get(sTableIndex)[Integer.parseInt(row, 2)][Integer.parseInt(column, 2)];
                 String binary = this.binMath.intToString(sTableNumber);
 
                 for (int bin = 0; bin < binary.length(); bin++) {
@@ -77,18 +75,23 @@ public class Des {
 
             // p permutation -> another table mask
             int[] pMessage = this.tables.getP_Message(sTransformedMess);
-            
+
+            // last xor to get R table
             int[] tempR = new int[messR.length];
             for (int i = 0; i < messL.length; i++) {
                 tempR[i] = binMath.xor(messL[i], pMessage[i]);
             }
-            
+
+            // swapping
             messL = ArrayUtils.addAll(messR, null);
             messR = ArrayUtils.addAll(tempR, null);
-
-            System.out.println("\n\tITERATION " + (keyIndex + 1) + ":\n" + getString(messL, 4) + "\n" + getString(messR, 4));
         }
 
+        // 4. merge and do last permutation
+        int[] lastPermuted = this.tables.getIPInverse_Message(ArrayUtils.addAll(messR, messL));
+        System.out.println(getString(lastPermuted, 8));
+        String hex = binMath.fromBinStringToHexString(getString(lastPermuted, 0));
+        System.out.println(hex);
     }
 
     public List<int[]> doKey() {
@@ -129,8 +132,10 @@ public class Des {
         String out = "";
 
         for (int i = 0; i < table.length; i++) {
-            if (i > 0 && (i % partLength) == 0) {
-                out += " ";
+            if (partLength != 0) {
+                if (i > 0 && (i % partLength) == 0) {
+                    out += " ";
+                }
             }
             out += table[i];
         }

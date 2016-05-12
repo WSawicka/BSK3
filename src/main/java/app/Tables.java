@@ -61,10 +61,19 @@ public class Tables {
                 59, 51, 43, 35, 27, 19, 11, 3,
                 61, 53, 45, 37, 29, 21, 13, 5,
                 63, 55, 47, 39, 31, 23, 15, 7};
+    private final int[] ipInverseTable = // last permutation table
+            {40, 8, 48, 16, 56, 24, 64, 32,
+                39, 7, 47, 15, 55, 23, 63, 31,
+                38, 6, 46, 14, 54, 22, 62, 30,
+                37, 5, 45, 13, 53, 21, 61, 29,
+                36, 4, 44, 12, 52, 20, 60, 28,
+                35, 3, 43, 11, 51, 19, 59, 27,
+                34, 2, 42, 10, 50, 18, 58, 26,
+                33, 1, 41, 9, 49, 17, 57, 25};
     private final int[] eTable = // E bit-selection table
             {32, 1, 2, 3, 4, 5,
                 4, 5, 6, 7, 8, 9,
-                8, 9, 10, 1, 12, 13,
+                8, 9, 10, 11, 12, 13,
                 12, 13, 14, 15, 16, 17,
                 16, 17, 18, 19, 20, 21,
                 20, 21, 22, 23, 24, 25,
@@ -149,6 +158,15 @@ public class Tables {
         }
         return keyP;
     }
+    
+    public int[] getIPInverse_Message(int[] table) {
+        int[] keyP = new int[this.B_64];
+        for (int i = 0; i < this.B_64; i++) {
+            int a = this.ipInverseTable[i];
+            keyP[i] = table[this.ipInverseTable[i] - 1];
+        }
+        return keyP;
+    }
 
     public int[] getE_Message(int[] table) {
         int[] keyP = new int[this.B_48];
@@ -158,7 +176,7 @@ public class Tables {
         }
         return keyP;
     }
-    
+
     public int[] getP_Message(int[] table) {
         int[] keyP = new int[this.B_32];
         for (int i = 0; i < this.B_32; i++) {
