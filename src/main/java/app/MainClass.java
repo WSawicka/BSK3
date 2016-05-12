@@ -26,19 +26,28 @@ public class MainClass {
         show("CHOOSE: 1. Code, 2. Decode, 0. End.");
         chosen = br.readLine();
         while (!chosen.equals("0")) {
-            //show("Actual location of searching files: " + location);
-            //show("Insert input file name: ");
-            //String name = br.readLine();
-            //int[][] content = file.loadFile(location + name);
-            show("Insert meassage: ");
-            String message = br.readLine();
-
-            show("Insert (hex) key: ");
-            String key = br.readLine();
-            Des des = new Des(key);
-            des.doDes(message);
-
-            show("\nCHOOSE: 1. Code, 2. Decode, 0. End.");
+            switch (chosen) {
+                case "1": case "2":
+                    show("Insert meassage: ");
+                    String message = br.readLine();
+                    show("Insert (hex) key: ");
+                    String key = br.readLine();
+                    Des des = new Des(key);
+                    if("1".equals(chosen)) des.doDes(true, message);
+                    else des.doDes(false, message);
+                    break;
+                case "3":
+                    show("Actual location of searching files: " + location);
+                    show("Insert input file name: ");
+                    String name = br.readLine();
+                    int[][] content = file.loadFile(location + name);
+                    show("Insert (hex) key: ");
+                    key = br.readLine();
+                    //Des des = new Des(key);
+                    //des.doDes(true, message);
+                    break;
+            }
+            show("\nCHOOSE: 1. Code, 2. Decode, 3. Code and decode file, 0. End.");
             chosen = br.readLine();
         }
     }

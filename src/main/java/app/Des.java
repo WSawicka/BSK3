@@ -31,7 +31,13 @@ public class Des {
         this.key = this.binMath.fromHexStringToBin(keyHex, B_64);
     }
 
-    public void doDes(String messageInserted) {
+    public String doDes(boolean cipher, String messageInserted) {
+        List<int[]> keys = doKey();
+        if(cipher != true) reverseList(keys);
+        return cipher(messageInserted);
+    }
+
+    private String cipher(String messageInserted) {
         int[] message = this.binMath.fromHexStringToBin(messageInserted, B_64);
 
         // 1. initial permutation
@@ -43,14 +49,14 @@ public class Des {
         List<int[]> keys = doKey();
 
         // 3. ITERATIONS
-        for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
+        for (int[] key1 : keys) {
             // e permutation
             int[] eMessR = this.tables.getE_Message(messR);
 
             // XOR of key and permuted message
             int[] xorResult = new int[eMessR.length];
             for (int i = 0; i < eMessR.length; i++) {
-                xorResult[i] = binMath.xor(eMessR[i], keys.get(keyIndex)[i]);
+                xorResult[i] = binMath.xor(eMessR[i], key1[i]);
             }
 
             // s-box transformation
@@ -91,10 +97,10 @@ public class Des {
         int[] lastPermuted = this.tables.getIPInverse_Message(ArrayUtils.addAll(messR, messL));
         System.out.println(getString(lastPermuted, 8));
         String hex = binMath.fromBinStringToHexString(getString(lastPermuted, 0));
-        System.out.println(hex);
+        return hex;
     }
 
-    public List<int[]> doKey() {
+    private List<int[]> doKey() {
         // 1. initial permutation
         int[] keyPermuted = this.tables.getPc1_Key(this.key);
 
@@ -126,6 +132,15 @@ public class Des {
             mergedAndPermuted.add(this.tables.getPc2_Key(tempKey));
         }
         return mergedAndPermuted;
+    }
+
+    private void reverseList(List list) {
+        List temp = new ArrayList<>();
+        for (int i = list.size() + 1; i > 0; i--) {
+            temp.add(list.get(i));
+        }
+        list.clear();
+        list.addAll(temp);
     }
 
     private String getString(int[] table, int partLength) {
