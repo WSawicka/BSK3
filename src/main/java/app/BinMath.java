@@ -17,9 +17,9 @@ public class BinMath {
         return valueTable;
     }
 
-    public int[] fromHexStringToBin(String value, int length) {
+    public int[] fromHexStringToBin(String value, int lengthOfTable) {
         String valueBin = "";
-        int[] valueTable = new int[length];
+        int[] parsed = new int[lengthOfTable];
         for (int i = 0; i < value.length(); i++) {
             if (value.charAt(i) == ' ') {
                 valueBin += ' ';
@@ -36,7 +36,7 @@ public class BinMath {
         for (int i = 0; i < valueBin.length(); i++) {
             try {
                 int bit = Integer.parseInt(valueBin.charAt(i) + "");
-                valueTable[keyIndex] = bit;
+                parsed[keyIndex] = bit;
                 keyIndex++;
             } catch (NumberFormatException nfex) {
                 if (valueBin.charAt(i) != ' ') {
@@ -45,7 +45,7 @@ public class BinMath {
                 }
             }
         }
-        return valueTable;
+        return parsed;
     }
 
     public String fromBinStringToHexString(String bin) {

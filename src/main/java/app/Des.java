@@ -5,23 +5,22 @@
  */
 package app;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 
 /**
- * 
+ *
  * @author mloda
  */
 public class Des {
 
     private BinMath binMath = new BinMath();
     private Tables tables = new Tables();
-    private int B_64 = 64;
-    private int B_56 = 56;
-    private int B_48 = 48;
-    private int B_32 = 32;
+    private final int B_64 = 64;
+    private final int B_56 = 56;
     private int[] key;
 
     public Des(String keyHex) {
@@ -30,14 +29,52 @@ public class Des {
 
     public String doDes(boolean cipher, String messageInserted) {
         List<int[]> keys = doKey();
-        if (cipher != true) keys = reverseList(keys);
-        return cipher(messageInserted, keys);
+        int[] message = this.binMath.fromHexStringToBin(messageInserted, B_64);
+        if (cipher != true) {
+            keys = reverseList(keys);
+        }
+        return cipher(message, keys);
     }
 
-    private String cipher(String messageInserted, List<int[]> keys) {
-        int[] message = this.binMath.fromHexStringToBin(messageInserted, B_64);
-        int[] messPermuted = this.tables.getIP_Message(message);
+    public void doDesFile(int[][] content, String location, String name) throws IOException {
+        List<int[]> keys = doKey();
+        RWBinaryFile file = new RWBinaryFile();
 
+        int[][] ciphered = new int[content.length][];
+        int[][] deciphered = new int[ciphered.length][];
+        
+        int contentRow = 0;
+        int outputRow = 0;
+        while (contentRow < content.length) {
+            int[] contentCopy = new int[0];
+            for (int i = 0; i < 8; i++, contentRow++) {
+                contentCopy = ArrayUtils.addAll(ArrayUtils.clone(content[contentRow]), contentCopy);
+            }
+            String out = cipher(contentCopy, keys);
+            int[] temp = this.binMath.fromHexStringToBin(out, B_64);
+            ciphered[outputRow] = ArrayUtils.clone(temp);
+            outputRow++;
+        }
+
+        keys = reverseList(keys);
+        
+        int output2Row = 0;
+        int cipheredRow = 0;
+        while (output2Row < ciphered.length) {
+            String out = "";
+            out = cipher(ciphered[cipheredRow], keys);
+            int[] temp = binMath.fromHexStringToBin(out, B_64);
+            for (int indexTemp = 0; indexTemp < 64; indexTemp = indexTemp + 8) {
+                deciphered[output2Row] = ArrayUtils.subarray(temp, indexTemp, indexTemp + 8);
+                output2Row++;
+            }
+            cipheredRow++;
+        }
+        file.write(deciphered, location + "deciphered_" + name);
+    }
+
+    private String cipher(int[] message, List<int[]> keys) {
+        int[] messPermuted = this.tables.getIP_Message(message);
         int[] messL = ArrayUtils.subarray(messPermuted, 0, messPermuted.length / 2);
         int[] messR = ArrayUtils.subarray(messPermuted, messPermuted.length / 2, messPermuted.length);
 
@@ -73,8 +110,8 @@ public class Des {
             for (int i = 0; i < messL.length; i++) {
                 tempR[i] = binMath.xor(messL[i], pMessage[i]);
             }
-            messL = ArrayUtils.addAll(messR, null);
-            messR = ArrayUtils.addAll(tempR, null);
+            messL = ArrayUtils.clone(messR);
+            messR = ArrayUtils.clone(tempR);
         }
         int[] lastPermuted = this.tables.getIPInverse_Message(ArrayUtils.addAll(messR, messL));
         String hex = binMath.fromBinStringToHexString(getString(lastPermuted, 0));
@@ -121,7 +158,9 @@ public class Des {
         String out = "";
         for (int i = 0; i < table.length; i++) {
             if (partLength != 0) {
-                if (i > 0 && (i % partLength) == 0) out += " ";
+                if (i > 0 && (i % partLength) == 0) {
+                    out += " ";
+                }
             }
             out += table[i];
         }

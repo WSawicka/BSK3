@@ -23,7 +23,7 @@ public class MainClass {
         RWBinaryFile file = new RWBinaryFile();
 
         String chosen = "1";
-        show("CHOOSE: 1. Code, 2. Decode, 0. End.");
+        show("CHOOSE: 1. Code, 2. Decode, 3. Code and decode file, 0. End.");
         chosen = br.readLine();
         while (!chosen.equals("0")) {
             switch (chosen) {
@@ -43,8 +43,9 @@ public class MainClass {
                     int[][] content = file.loadFile(location + name);
                     show("Insert (hex) key: ");
                     key = br.readLine();
-                    //Des des = new Des(key);
-                    //des.doDes(true, message);
+                    des = new Des(key);
+                    des.doDesFile(content, location, name);
+                    System.out.println("Done!");
                     break;
             }
             show("\nCHOOSE: 1. Code, 2. Decode, 3. Code and decode file, 0. End.");
