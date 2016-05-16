@@ -42,22 +42,23 @@ public class Des {
 
         int[][] ciphered = new int[content.length][];
         int[][] deciphered = new int[ciphered.length][];
-        
+
         int contentRow = 0;
         int outputRow = 0;
         while (contentRow < content.length) {
             int[] contentCopy = new int[0];
             for (int i = 0; i < 8; i++, contentRow++) {
-                contentCopy = ArrayUtils.addAll(ArrayUtils.clone(content[contentRow]), contentCopy);
+                contentCopy = ArrayUtils.addAll(contentCopy, ArrayUtils.clone(content[contentRow]));
             }
             String out = cipher(contentCopy, keys);
             int[] temp = this.binMath.fromHexStringToBin(out, B_64);
             ciphered[outputRow] = ArrayUtils.clone(temp);
             outputRow++;
         }
+        file.write(ciphered, location + "ciphered_" + name);
 
         keys = reverseList(keys);
-        
+
         int output2Row = 0;
         int cipheredRow = 0;
         while (output2Row < ciphered.length) {
