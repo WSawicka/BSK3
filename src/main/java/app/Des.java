@@ -40,8 +40,8 @@ public class Des {
         List<int[]> keys = doKey();
         RWBinaryFile file = new RWBinaryFile();
 
-        int[][] ciphered = new int[content.length][];
-        int[][] deciphered = new int[ciphered.length][];
+        int[][] ciphered = new int[content.length/8][];
+        int[][] deciphered = new int[content.length][];
 
         int contentRow = 0;
         int outputRow = 0;
@@ -55,7 +55,16 @@ public class Des {
             ciphered[outputRow] = ArrayUtils.clone(temp);
             outputRow++;
         }
-        file.write(ciphered, location + "ciphered_" + name);
+
+        int[][] cipheredToWrite = new int[content.length][];
+        int index = 0;
+        for (int[] tab : ciphered) {
+            for (int i = 0; i < tab.length; i = i + 8) {
+                cipheredToWrite[index] = ArrayUtils.subarray(tab, i, i + 8);
+                index++;
+            }
+        }
+        file.write(cipheredToWrite, location + "ciphered_" + name);
 
         keys = reverseList(keys);
 
